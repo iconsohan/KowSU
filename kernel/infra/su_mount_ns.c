@@ -24,29 +24,6 @@
 extern int path_mount(const char *dev_name, struct path *path, const char *type_page, unsigned long flags,
                       void *data_page);
 
-#if defined(__aarch64__)
-extern long __arm64_sys_setns(const struct pt_regs *regs);
-#elif defined(__x86_64__)
-extern long __x64_sys_setns(const struct pt_regs *regs);
-#endif
-
-static long ksu_sys_setns(int fd, int flags)
-{
-    struct pt_regs regs;
-    memset(&regs, 0, sizeof(regs));
-
-    PT_REGS_PARM1(&regs) = fd;
-    PT_REGS_PARM2(&regs) = flags;
-
-#if defined(__aarch64__)
-    return __arm64_sys_setns(&regs);
-#elif defined(__x86_64__)
-    return __x64_sys_setns(&regs);
-#else
-#error "Unsupported arch"
-#endif
-}
-
 // global mode , need CAP_SYS_ADMIN and CAP_SYS_CHROOT to perform setns
 static void ksu_mnt_ns_global(void)
 {
@@ -113,7 +90,7 @@ try_setns:
     }
 
     fd_install(fd, ns_file);
-    ret = ksu_sys_setns(fd, CLONE_NEWNS);
+    ret = ksyscall(setns, fd, CLONE_NEWNS);
 
     ksu_close_fd(fd);
 
@@ -139,9 +116,9 @@ out:
 // individual mode , need CAP_SYS_ADMIN to perform unshare and remount
 static void ksu_mnt_ns_individual(void)
 {
-    long ret = ksys_unshare(CLONE_NEWNS);
+    long ret = ksyscall(unshare, CLONE_NEWNS);
     if (ret) {
-        pr_warn("call ksys_unshare failed: %ld\n", ret);
+        pr_warn("call sys_unshare failed: %ld\n", ret);
         return;
     }
 

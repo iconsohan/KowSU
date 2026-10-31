@@ -56,15 +56,6 @@ static const struct ksu_feature_handler su_compat_handler = {
     .set_handler = su_compat_feature_set,
 };
 
-static void __user *userspace_stack_buffer(const void *d, size_t len)
-{
-    // To avoid having to mmap a page in userspace, just write below the stack
-    // pointer.
-    char __user *p = (void __user *)current_user_stack_pointer() - len;
-
-    return copy_to_user(p, d, len) ? NULL : p;
-}
-
 static char __user *ksud_user_path(void)
 {
     static const char ksud_path[] = KSUD_PATH;
@@ -229,7 +220,7 @@ static long ksu_handle_execve_sucompat_common(const char __user **filename_user,
     struct file *ksud_file;
     const struct cred *old_cred;
 
-    if (execveat && ((int)PT_REGS_PARM1(regs) != AT_FDCWD || (int)PT_REGS_PARM5(regs) != 0))
+    if (execveat && ((int)PT_REGS_SYSCALL_PARM1(regs) != AT_FDCWD || (int)PT_REGS_PARM5(regs) != 0))
         goto do_orig_execve;
 
     if (unlikely(!filename_user))
@@ -264,7 +255,7 @@ static long ksu_handle_execve_sucompat_common(const char __user **filename_user,
     pending_sucompat = ksu_sulog_capture_sucompat(*filename_user, argv_user, GFP_KERNEL);
     // execve(file, argv, environ)
     // execveat(fd, file, argv, environ, flags)
-    orig_regs[0] = regs->__PT_PARM1_REG;
+    orig_regs[0] = PT_REGS_SYSCALL_PARM1(regs);
     orig_regs[1] = regs->__PT_PARM2_REG;
     orig_regs[2] = regs->__PT_PARM3_REG;
     orig_regs[3] = regs->__PT_SYSCALL_PARM4_REG;
@@ -273,7 +264,7 @@ static long ksu_handle_execve_sucompat_common(const char __user **filename_user,
     regs->__PT_SYSCALL_PARM4_REG = envp;
     regs->__PT_PARM3_REG = (unsigned long)argv_user;
     regs->__PT_PARM2_REG = empty_user_path();
-    regs->__PT_PARM1_REG = tmp_fd;
+    PT_REGS_SYSCALL_PARM1(regs) = tmp_fd;
 
     ret = escape_with_root_profile();
     if (ret) {
@@ -284,7 +275,7 @@ static long ksu_handle_execve_sucompat_common(const char __user **filename_user,
     ret = ksu_syscall_table[__NR_execveat](regs);
     if (ret < 0) {
         ksu_close_fd(tmp_fd);
-        regs->__PT_PARM1_REG = orig_regs[0];
+        PT_REGS_SYSCALL_PARM1(regs) = orig_regs[0];
         regs->__PT_PARM2_REG = orig_regs[1];
         regs->__PT_PARM3_REG = orig_regs[2];
         regs->__PT_SYSCALL_PARM4_REG = orig_regs[3];

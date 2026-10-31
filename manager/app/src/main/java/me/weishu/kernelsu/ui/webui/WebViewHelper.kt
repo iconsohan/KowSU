@@ -19,8 +19,10 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.webkit.WebViewAssetLoader
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.data.model.AppInfo
 import me.weishu.kernelsu.data.repository.ModuleRepositoryImpl
 import me.weishu.kernelsu.ui.util.AppIconCache
 import me.weishu.kernelsu.ui.util.createRootShell
@@ -33,9 +35,14 @@ import java.io.File
 private const val WEB_DOMAIN = "mui.kernelsu.org"
 private const val KSU_SCHEME = "ksu"
 private const val ICON_HOST = "icon"
+private const val INTERNAL_BLOB_DOWNLOAD_HOST = "blob-download.kernelsu.internal"
 
 private fun loadDownloadJs(context: Context): String {
     return context.assets.open("webview/download.js").bufferedReader(Charsets.UTF_8).use { it.readText() }
+}
+
+internal fun webUIApps(): List<AppInfo> = runBlocking {
+    SuperUserViewModel.loadApps(useCache = true).getOrNull()?.first.orEmpty()
 }
 
 fun Activity.setTaskDescription(label: String) {
@@ -78,9 +85,6 @@ internal suspend fun prepareWebView(
         webUIState.moduleName = moduleInfo.name
         webUIState.modDir = "/data/adb/modules/${moduleId}"
 
-        if (SuperUserViewModel.apps.isEmpty()) {
-            SuperUserViewModel().fetchAppList()
-        }
         val shell = createRootShell(true)
         webUIState.rootShell = shell
 
@@ -124,12 +128,12 @@ internal suspend fun prepareWebView(
                     if (url.scheme.equals(KSU_SCHEME, ignoreCase = true) && url.host.equals(ICON_HOST, ignoreCase = true)) {
                         val packageName = url.path?.substring(1)
                         if (!packageName.isNullOrEmpty()) {
-                            val appInfo = SuperUserViewModel.apps
+                            val appInfo = webUIApps()
                                 .find { it.packageName == packageName }
                                 ?.packageInfo?.applicationInfo
                             if (appInfo != null) {
                                 val icon = AppIconCache.loadIconSync(activity, appInfo.withMainUserUid(activity), 512)
-                                val stream = java.io.ByteArrayOutputStream()
+                                val stream = ByteArrayOutputStream()
                                 icon.compress(Bitmap.CompressFormat.PNG, 100, stream)
                                 return WebResourceResponse(
                                     "image/png", null, 200, "OK",
@@ -226,7 +230,9 @@ internal suspend fun prepareWebView(
             webView.addJavascriptInterface(webviewInterface, "ksu")
             webView.addJavascriptInterface(downloadInterface, "ksu_download")
             webView.setDownloadListener { url, _, _, _, _ ->
-                downloadInterface.openExternal(url)
+                if (Uri.parse(url).host != INTERNAL_BLOB_DOWNLOAD_HOST) {
+                    downloadInterface.openExternal(url)
+                }
             }
             webView.evaluateJavascript(loadDownloadJs(activity), null)
             webUIState.uiEvent = WebUIEvent.WebViewReady

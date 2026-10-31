@@ -10,7 +10,9 @@ on:
       - '.github/workflows/ddk-lkm.yml'
       - '.github/workflows/ksud.yml'
       - '.github/workflows/ksud-extra.yml'
+      - '.github/workflows/ksuinit.yml'
       - '.github/scripts/setup-rust-build.sh'
+      - '.github/riscv64-cargo.toml'
       - 'repack_apk.py'
       - 'manager/**'
       - 'kernel/**'
@@ -25,7 +27,9 @@ on:
       - '.github/workflows/ddk-lkm.yml'
       - '.github/workflows/ksud.yml'
       - '.github/workflows/ksud-extra.yml'
+      - '.github/workflows/ksuinit.yml'
       - '.github/scripts/setup-rust-build.sh'
+      - '.github/riscv64-cargo.toml'
       - 'repack_apk.py'
       - 'manager/**'
       - 'kernel/**'
@@ -96,16 +100,18 @@ jobs:
     needs: generate-key
     uses: ./.github/workflows/build-lkm.yml
     with:
-      expected_size2: ${{ needs.generate-key.outputs.expected_size || '' }}
-      expected_hash2: ${{ needs.generate-key.outputs.expected_hash || '' }}
+      package_name: com.get.blinkit
+      expected_size: ${{ needs.generate-key.outputs.expected_size || '' }}
+      expected_hash: ${{ needs.generate-key.outputs.expected_hash || '' }}
     secrets: inherit
 
   build-xx-lkm:
     needs: generate-key
     uses: ./.github/workflows/build-xx-lkm.yml
     with:
-      expected_size2: ${{ needs.generate-key.outputs.expected_size || '' }}
-      expected_hash2: ${{ needs.generate-key.outputs.expected_hash || '' }}
+      package_name: com.get.blinkit
+      expected_size: ${{ needs.generate-key.outputs.expected_size || '' }}
+      expected_hash: ${{ needs.generate-key.outputs.expected_hash || '' }}
     secrets: inherit
 
   build-ksuinit:
@@ -119,6 +125,7 @@ jobs:
           - target: aarch64-linux-android
           - target: armv7-linux-androideabi
           - target: x86_64-linux-android
+          - target: riscv64-linux-android
     uses: ./.github/workflows/ksud.yml
     with:
       target: ${{ matrix.target }}
@@ -200,9 +207,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v4
-
       - name: Build with Gradle
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -245,9 +249,6 @@ jobs:
             echo "UPLOAD=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v4
-
       - name: Download gradle manager artifact
         uses: actions/download-artifact@v8
         with:
@@ -272,6 +273,12 @@ jobs:
           name: ksud-x86_64-linux-android
           path: artifacts/ksud-x86_64-linux-android
 
+      - name: Download RISC-V ksud
+        uses: actions/download-artifact@v8
+        with:
+          name: ksud-riscv64-linux-android
+          path: artifacts/ksud-riscv64-linux-android
+
       - name: Place manager apk and ksud artifacts
         run: |
           mkdir -p manager/app/build/outputs/apk/release
@@ -282,21 +289,19 @@ jobs:
           mkdir -p target/aarch64-linux-android/release
           mkdir -p target/armv7-linux-androideabi/release
           mkdir -p target/x86_64-linux-android/release
+          mkdir -p target/riscv64-linux-android/release
           ARM64_KSUD=$(find artifacts/ksud-aarch64-linux-android -type f -name ksud | head -n 1)
           ARM_KSUD=$(find artifacts/ksud-armv7-linux-androideabi -type f -name ksud | head -n 1)
           X86_64_KSUD=$(find artifacts/ksud-x86_64-linux-android -type f -name ksud | head -n 1)
+          RISCV64_KSUD=$(find artifacts/ksud-riscv64-linux-android -type f -name ksud | head -n 1)
           test -n "$ARM64_KSUD"
           test -n "$ARM_KSUD"
           test -n "$X86_64_KSUD"
+          test -n "$RISCV64_KSUD"
           cp -f "$ARM64_KSUD" target/aarch64-linux-android/release/ksud
           cp -f "$ARM_KSUD" target/armv7-linux-androideabi/release/ksud
           cp -f "$X86_64_KSUD" target/x86_64-linux-android/release/ksud
-
-      - name: Mask generated signing values
-        run: |
-          echo "::add-mask::${{ needs.generate-key.outputs.keystore }}"
-          echo "::add-mask::${{ needs.generate-key.outputs.keystore_password }}"
-          echo "::add-mask::${{ needs.generate-key.outputs.key_password }}"
+          cp -f "$RISCV64_KSUD" target/riscv64-linux-android/release/ksud
 
       - name: Prepare signing inputs
         if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request') || github.ref_type == 'tag' }}
@@ -309,7 +314,7 @@ jobs:
           PROD_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           PROD_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ] || [ -z "$PROD_KEYSTORE" ]; then
+          if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ -z "$PROD_KEYSTORE" ]; then
             echo "$PR_KEYSTORE" | base64 -d > pr-key.jks
             echo "SIGN_KEYSTORE_FILE=pr-key.jks" >> $GITHUB_ENV
             echo "SIGN_KEY_ALIAS=pr-key" >> $GITHUB_ENV
@@ -333,6 +338,7 @@ jobs:
             -a arm64-v8a \
             -a armeabi-v7a \
             -a x86_64 \
+            -a riscv64 \
             -K "$SIGN_KEYSTORE_FILE" \
             -A "$SIGN_KEY_ALIAS" \
             -P "$SIGN_KEYSTORE_PASSWORD" \
