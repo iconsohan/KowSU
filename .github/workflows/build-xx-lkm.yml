@@ -40,7 +40,7 @@ jobs:
     - name: Get KowSU version
       id: version
       run: |
-        git config --global --add safe.directory /__w/KernelSU/KernelSU
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
         cd kernel
         KSU_GIT_VERSION=$(git rev-list --count HEAD)
         KSU_VERSION=$(expr 30000 + $KSU_GIT_VERSION)
@@ -62,7 +62,7 @@ jobs:
         EXPECTED_SIZE2: ${{ inputs.expected_size2 }}
         EXPECTED_HASH2: ${{ inputs.expected_hash2 }}
       run: |
-        git config --global --add safe.directory /__w/KernelSU/KernelSU
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
         cd kernel
 
