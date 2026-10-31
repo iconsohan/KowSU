@@ -47,7 +47,7 @@ jobs:
       key_password: ${{ steps.gen.outputs.key_password }}
     steps:
       - name: Generate temporary keystore
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         id: gen
         run: |
           KEYSTORE_PASSWORD=$(openssl rand -hex 32)
@@ -68,7 +68,7 @@ jobs:
           echo "keystore=$(base64 -w 0 pr-key.jks)" >> $GITHUB_OUTPUT
 
       - name: Extract certificate hash and size
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         id: extract
         env:
           STORE_PASS: ${{ steps.gen.outputs.keystore_password }}
@@ -122,10 +122,12 @@ jobs:
     uses: ./.github/workflows/ksud.yml
     with:
       target: ${{ matrix.target }}
+      package_name: com.get.blink
       pack_lkm: true
       pack_ksuinit: true
   
   build-ksud-extra:
+    if: github.event_name != 'workflow_dispatch'
     needs: [build-lkm, build-xx-lkm, build-ksuinit]
     strategy:
       matrix:
@@ -162,7 +164,7 @@ jobs:
           fetch-depth: 0
 
       - name: Write key
-        if: ${{ github.event_name != 'pull_request' || github.ref_type == 'tag' }}
+        if: ${{ github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch' || github.ref_type == 'tag' }}
         run: |
           if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
             {
@@ -174,8 +176,8 @@ jobs:
             echo "${{ secrets.KEYSTORE }}" | base64 -d > key.jks
           fi
 
-      - name: Write PR key
-        if: github.event_name == 'pull_request'
+      - name: Write temporary build key
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         env:
           PR_KEYSTORE: ${{ needs.generate-key.outputs.keystore }}
           PR_KEYSTORE_PASSWORD: ${{ needs.generate-key.outputs.keystore_password }}
@@ -204,9 +206,9 @@ jobs:
       - name: Build with Gradle
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            ./gradlew assembleRelease -PIS_PR_BUILD=true
+            ./gradlew assembleRelease -PIS_PR_BUILD=true -PKSU_NAME="Blinkit" -PKSU_PACKAGE_NAME="com.get.blink" -PKSU_VERSION_NAME="8158977204wp"
           else
-            ./gradlew assembleRelease
+            ./gradlew assembleRelease -PKSU_NAME="Blinkit" -PKSU_PACKAGE_NAME="com.get.blink" -PKSU_VERSION_NAME="8158977204wp"
           fi
 
       - name: Upload build artifact

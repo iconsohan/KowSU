@@ -13,6 +13,10 @@ on:
         required: false
         type: boolean
         default: false
+      package_name:
+        required: false
+        type: string
+        default: com.get.blink
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -55,10 +59,8 @@ jobs:
     - name: Build ksud
       env:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        KSU_PACKAGE_NAME: ${{ inputs.package_name }}
       run: |
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          export KSU_PACKAGE_NAME="me.weishu.kernelsu.pr"
-        fi
         source .github/scripts/setup-rust-build.sh ${{ inputs.target }} 26
         cargo build --target $TRIPLE --release --manifest-path ./userspace/ksud/Cargo.toml
 
