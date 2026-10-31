@@ -29,7 +29,9 @@ fun getGitDescribe(): String {
 
 fun getVersionCode(): Int {
     val commitCount = getGitCommitCount()
-    return 30000 + commitCount
+    // Keep custom builds current with the latest official manager release.
+    // The upstream release checker currently reports version code 32680.
+    return maxOf(30000 + commitCount, 32680)
 }
 
 fun getVersionName(): String {
