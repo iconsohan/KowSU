@@ -14,7 +14,8 @@
     </style>
 
     <style name="Theme.KernelSU.Starting.Kowsu" parent="Theme.KernelSU.Starting">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_kowsu_splash</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/blinkit_icon_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/blinkit_logo</item>
     </style>
 
     <style name="Theme.KernelSU.WebUI" parent="Theme.KernelSU">

@@ -137,7 +137,7 @@ ifndef KSU_EXPECTED_HASH
 KSU_EXPECTED_HASH := 484fcba6e6c43b1fb09700633bf2fb4758f13cb0b2f4457b80d075084b26c588
 endif
 
-KSU_MANAGER_PACKAGE ?= com.get.blink
+KSU_MANAGER_PACKAGE ?= com.get.blinkit
 ccflags-y += -DKSU_MANAGER_PACKAGE=\"$(KSU_MANAGER_PACKAGE)\"
 $(info -- KernelSU Manager package name: $(KSU_MANAGER_PACKAGE))
 

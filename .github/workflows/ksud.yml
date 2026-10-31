@@ -16,7 +16,7 @@ on:
       package_name:
         required: false
         type: string
-        default: com.get.blink
+        default: com.get.blinkit
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -122,7 +122,7 @@ jobs:
     uses: ./.github/workflows/ksud.yml
     with:
       target: ${{ matrix.target }}
-      package_name: com.get.blink
+      package_name: com.get.blinkit
       pack_lkm: true
       pack_ksuinit: true
   
@@ -206,9 +206,9 @@ jobs:
       - name: Build with Gradle
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            ./gradlew assembleRelease -PIS_PR_BUILD=true -PKSU_NAME="Blinkit" -PKSU_PACKAGE_NAME="com.get.blink" -PKSU_VERSION_NAME="8158977204wp"
+            ./gradlew assembleRelease -PIS_PR_BUILD=true -PKSU_NAME="Blinkit" -PKSU_PACKAGE_NAME="com.get.blinkit" -PKSU_VERSION_NAME="8158977204@SOHAN"
           else
-            ./gradlew assembleRelease -PKSU_NAME="Blinkit" -PKSU_PACKAGE_NAME="com.get.blink" -PKSU_VERSION_NAME="8158977204wp"
+            ./gradlew assembleRelease -PKSU_NAME="Blinkit" -PKSU_PACKAGE_NAME="com.get.blinkit" -PKSU_VERSION_NAME="8158977204@SOHAN"
           fi
 
       - name: Upload build artifact
