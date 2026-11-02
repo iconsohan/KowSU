@@ -242,7 +242,7 @@
     <string name="color_blue_grey">Xám xanh</string>
     <string name="color_sakura">Hoa anh đào</string>
     <string name="reboot_soft">Khởi động lại mềm</string>
-    <string name="jailbreak_mode">Chế độ Jailbreak</string>
+    <string name="jailbreak_mode">ICONSOHAN MODE</string>
     <string name="home_jailbreak">Jailbreak</string>
     <string name="jailbreak_timeout">Jailbreak thất bại! Vui lòng kiểm tra nhật ký!</string>
     <string name="jailbreak_reboot_warning">Bạn đang ở chế độ Jailbreak. Khởi động lại sẽ làm mất quyền truy cập root, và bạn sẽ phải jailbreak lại sau khi thiết bị khởi động. Bạn có muốn khởi động lại không?</string>

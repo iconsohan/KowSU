@@ -150,7 +150,7 @@
     <string name="settings_kernel_umount">Kernel bağlantısını kes</string>
     <string name="settings_kernel_umount_summary">KernelSU tarafından kontrol edilen çekirdek seviyesinde bağlantı kesme davranışı.</string>
     <string name="reboot_soft">Soft restart</string>
-    <string name="jailbreak_mode">Jailbreak modu</string>
+    <string name="jailbreak_mode">ICONSOHAN MODE</string>
     <string name="home_jailbreak">Jailbreak</string>
     <string name="jailbreak_timeout">Jailbreak işlemi başarısız olmuş olabilir, lütfen günlükleri kontrol edin</string>
     <string name="safe_mode_module_disabled">Güvenli modda modül yükleme devre dışı bırakılmıştır</string>

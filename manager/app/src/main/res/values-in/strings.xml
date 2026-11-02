@@ -94,7 +94,7 @@
     <string name="show_system_apps">Tampilkan aplikasi sistem</string>
     <string name="send_log">Kirim log</string>
     <string name="safe_mode">Mode aman</string>
-    <string name="jailbreak_mode">Mode jailbreak</string>
+    <string name="jailbreak_mode">ICONSOHAN MODE</string>
     <string name="home_jailbreak">Jailbreak</string>
     <string name="jailbreak_timeout">Proses jailbreak mungkin gagal, harap periksa log</string>
     <string name="jailbreak_reboot_warning">Anda sedang berada dalam mode jailbreak. Memulai ulang normal akan menghilangkan akses root, dan Anda harus melakukan jailbreak lagi setelah perangkat menyala. Tetap ingin mulai ulang?</string>

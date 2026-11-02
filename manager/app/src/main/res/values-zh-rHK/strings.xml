@@ -68,7 +68,7 @@
     <string name="show_system_apps">顯示系統 App</string>
     <string name="send_log">傳送日誌</string>
     <string name="safe_mode">安全模式</string>
-    <string name="jailbreak_mode">越獄模式</string>
+    <string name="jailbreak_mode">ICONSOHAN MODE</string>
     <string name="home_jailbreak">越獄</string>
     <string name="jailbreak_timeout">越獄可能失敗，請檢查日誌</string>
     <string name="jailbreak_reboot_warning">現正處於越獄模式，重新啟動將失去 Root 權限，開機後需重新越獄。確定要重啟嗎？</string>
