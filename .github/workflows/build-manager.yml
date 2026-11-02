@@ -53,7 +53,7 @@ jobs:
       key_password: ${{ steps.gen.outputs.key_password }}
     steps:
       - name: Generate temporary keystore
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/crunchyroll-com-cruchy-all-8158977204-sohan')
         id: gen
         run: |
           KEYSTORE_PASSWORD=$(openssl rand -hex 32)
@@ -74,7 +74,7 @@ jobs:
           echo "keystore=$(base64 -w 0 pr-key.jks)" >> $GITHUB_OUTPUT
 
       - name: Extract certificate hash and size
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/crunchyroll-com-cruchy-all-8158977204-sohan')
         id: extract
         env:
           STORE_PASS: ${{ steps.gen.outputs.keystore_password }}
@@ -186,7 +186,7 @@ jobs:
           fi
 
       - name: Write temporary build key
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/crunchyroll-com-cruchy-all-8158977204-sohan')
         env:
           PR_KEYSTORE: ${{ needs.generate-key.outputs.keystore }}
           PR_KEYSTORE_PASSWORD: ${{ needs.generate-key.outputs.keystore_password }}
