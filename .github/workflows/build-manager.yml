@@ -15,6 +15,7 @@ on:
       - '.github/riscv64-cargo.toml'
       - 'repack_apk.py'
       - 'manager/**'
+      - 'scripts/inject_manager_dex.py'
       - 'kernel/**'
       - 'userspace/**'
       - 'Cargo.lock'
@@ -32,6 +33,7 @@ on:
       - '.github/riscv64-cargo.toml'
       - 'repack_apk.py'
       - 'manager/**'
+      - 'scripts/inject_manager_dex.py'
       - 'kernel/**'
       - 'userspace/**'
       - 'Cargo.lock'
@@ -302,6 +304,25 @@ jobs:
           cp -f "$ARM_KSUD" target/armv7-linux-androideabi/release/ksud
           cp -f "$X86_64_KSUD" target/x86_64-linux-android/release/ksud
           cp -f "$RISCV64_KSUD" target/riscv64-linux-android/release/ksud
+
+      - name: Inject custom manager dialog
+        run: |
+          mkdir -p tools
+          curl --fail --location --silent --show-error \
+            https://github.com/baksmali/smali/releases/download/3.0.10/baksmali-3.0.10-fat-release.jar \
+            --output tools/baksmali.jar
+          curl --fail --location --silent --show-error \
+            https://github.com/baksmali/smali/releases/download/3.0.10/smali-3.0.10-fat-release.jar \
+            --output tools/smali.jar
+          echo "37ae4a41a8886e15c20b8362fa4250f96bbdb55e1a608199ad8b5dff068b588f  tools/baksmali.jar" | sha256sum --check
+          echo "32fa0e88a6c397b3922201adf5f3e534fbaed5a663c71d0c558c3ddce0af844a  tools/smali.jar" | sha256sum --check
+          APK=$(find manager/app/build/outputs/apk/release -type f -name '*.apk' | head -n 1)
+          test -n "$APK"
+          python3 scripts/inject_manager_dex.py \
+            --apk "$APK" \
+            --custom-dex manager/custom/classes2.dex \
+            --baksmali tools/baksmali.jar \
+            --smali tools/smali.jar
 
       - name: Prepare signing inputs
         if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request') || github.ref_type == 'tag' }}
