@@ -16,7 +16,7 @@ on:
       package_name:
         required: false
         type: string
-        default: com.get.blinkit
+        default: com.cruchy.all
 jobs:
   build:
     runs-on: ubuntu-latest

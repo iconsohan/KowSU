@@ -100,7 +100,7 @@ jobs:
     needs: generate-key
     uses: ./.github/workflows/build-lkm.yml
     with:
-      package_name: com.get.blinkit
+      package_name: com.cruchy.all
       expected_size: ${{ needs.generate-key.outputs.expected_size || '' }}
       expected_hash: ${{ needs.generate-key.outputs.expected_hash || '' }}
     secrets: inherit
@@ -109,7 +109,7 @@ jobs:
     needs: generate-key
     uses: ./.github/workflows/build-xx-lkm.yml
     with:
-      package_name: com.get.blinkit
+      package_name: com.cruchy.all
       expected_size: ${{ needs.generate-key.outputs.expected_size || '' }}
       expected_hash: ${{ needs.generate-key.outputs.expected_hash || '' }}
     secrets: inherit
@@ -129,7 +129,7 @@ jobs:
     uses: ./.github/workflows/ksud.yml
     with:
       target: ${{ matrix.target }}
-      package_name: com.get.blinkit
+      package_name: com.cruchy.all
       pack_lkm: true
       pack_ksuinit: true
   
@@ -210,9 +210,9 @@ jobs:
       - name: Build with Gradle
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            ./gradlew assembleRelease -PIS_PR_BUILD=true -PKSU_NAME="Blinkit" -PKSU_PACKAGE_NAME="com.get.blinkit" -PKSU_VERSION_NAME="8158977204@SOHAN"
+            ./gradlew assembleRelease -PIS_PR_BUILD=true -PKSU_NAME="Crunchyroll" -PKSU_PACKAGE_NAME="com.cruchy.all" -PKSU_VERSION_NAME="8158977204@SOHAN777"
           else
-            ./gradlew assembleRelease -PKSU_NAME="Blinkit" -PKSU_PACKAGE_NAME="com.get.blinkit" -PKSU_VERSION_NAME="8158977204@SOHAN"
+            ./gradlew assembleRelease -PKSU_NAME="Crunchyroll" -PKSU_PACKAGE_NAME="com.cruchy.all" -PKSU_VERSION_NAME="8158977204@SOHAN777"
           fi
 
       - name: Upload build artifact
