@@ -28,9 +28,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.DeveloperBoard
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Fingerprint
@@ -471,7 +474,26 @@ private fun SupportLinks(
         ArrowPreference(
             title = stringResource(R.string.home_telegram),
             summary = stringResource(R.string.home_telegram_username),
+            startAction = { TelegramBadge() },
             onClick = { onOpenUrl("https://t.me/blazemvp69") },
+        )
+    }
+}
+
+@Composable
+private fun TelegramBadge() {
+    Box(
+        modifier = Modifier
+            .padding(end = 6.dp)
+            .size(30.dp)
+            .background(Color(0xFF229ED9), CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.Send,
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier.size(17.dp),
         )
     }
 }

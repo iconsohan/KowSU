@@ -14,8 +14,8 @@
     </style>
 
     <style name="Theme.KernelSU.Starting.Kowsu" parent="Theme.KernelSU.Starting">
-        <item name="windowSplashScreenIconBackgroundColor">@color/crunchyroll_icon_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/crunchyroll_logo</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/oyo_icon_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/oyo_icon</item>
     </style>
 
     <style name="Theme.KernelSU.WebUI" parent="Theme.KernelSU" />

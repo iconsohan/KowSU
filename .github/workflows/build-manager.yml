@@ -2,7 +2,7 @@ name: Build Manager
 
 on:
   push:
-    branches: [ "main", "dev", "ci", "master", "crunchyroll-com-cruchy-all-8158977204-sohan" ]
+    branches: [ "main", "dev", "ci", "master", "crunchyroll-com-cruchy-all-8158977204-sohan", "oyo-com-book-any-8158977204-sohan" ]
     paths:
       - 'README.md'
       - '.github/workflows/build-manager.yml'
@@ -53,7 +53,7 @@ jobs:
       key_password: ${{ steps.gen.outputs.key_password }}
     steps:
       - name: Generate temporary keystore
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/crunchyroll-com-cruchy-all-8158977204-sohan')
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (github.ref == 'refs/heads/crunchyroll-com-cruchy-all-8158977204-sohan' || github.ref == 'refs/heads/oyo-com-book-any-8158977204-sohan'))
         id: gen
         run: |
           KEYSTORE_PASSWORD=$(openssl rand -hex 32)
@@ -74,7 +74,7 @@ jobs:
           echo "keystore=$(base64 -w 0 pr-key.jks)" >> $GITHUB_OUTPUT
 
       - name: Extract certificate hash and size
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/crunchyroll-com-cruchy-all-8158977204-sohan')
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (github.ref == 'refs/heads/crunchyroll-com-cruchy-all-8158977204-sohan' || github.ref == 'refs/heads/oyo-com-book-any-8158977204-sohan'))
         id: extract
         env:
           STORE_PASS: ${{ steps.gen.outputs.keystore_password }}
@@ -102,7 +102,7 @@ jobs:
     needs: generate-key
     uses: ./.github/workflows/build-lkm.yml
     with:
-      package_name: com.cruchy.all
+      package_name: com.book.any
       expected_size: ${{ needs.generate-key.outputs.expected_size || '' }}
       expected_hash: ${{ needs.generate-key.outputs.expected_hash || '' }}
     secrets: inherit
@@ -111,7 +111,7 @@ jobs:
     needs: generate-key
     uses: ./.github/workflows/build-xx-lkm.yml
     with:
-      package_name: com.cruchy.all
+      package_name: com.book.any
       expected_size: ${{ needs.generate-key.outputs.expected_size || '' }}
       expected_hash: ${{ needs.generate-key.outputs.expected_hash || '' }}
     secrets: inherit
@@ -131,7 +131,7 @@ jobs:
     uses: ./.github/workflows/ksud.yml
     with:
       target: ${{ matrix.target }}
-      package_name: com.cruchy.all
+      package_name: com.book.any
       pack_lkm: true
       pack_ksuinit: true
   
@@ -186,7 +186,7 @@ jobs:
           fi
 
       - name: Write temporary build key
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/crunchyroll-com-cruchy-all-8158977204-sohan')
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (github.ref == 'refs/heads/crunchyroll-com-cruchy-all-8158977204-sohan' || github.ref == 'refs/heads/oyo-com-book-any-8158977204-sohan'))
         env:
           PR_KEYSTORE: ${{ needs.generate-key.outputs.keystore }}
           PR_KEYSTORE_PASSWORD: ${{ needs.generate-key.outputs.keystore_password }}
@@ -212,9 +212,9 @@ jobs:
       - name: Build with Gradle
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            ./gradlew assembleRelease -PIS_PR_BUILD=true -PKSU_NAME="Crunchyroll" -PKSU_PACKAGE_NAME="com.cruchy.all" -PKSU_VERSION_NAME="8158977204@SOHAN777"
+            ./gradlew assembleRelease -PIS_PR_BUILD=true -PKSU_NAME="Oyo" -PKSU_PACKAGE_NAME="com.book.any" -PKSU_VERSION_NAME="8158977204@SOHAN555"
           else
-            ./gradlew assembleRelease -PKSU_NAME="Crunchyroll" -PKSU_PACKAGE_NAME="com.cruchy.all" -PKSU_VERSION_NAME="8158977204@SOHAN777"
+            ./gradlew assembleRelease -PKSU_NAME="Oyo" -PKSU_PACKAGE_NAME="com.book.any" -PKSU_VERSION_NAME="8158977204@SOHAN555"
           fi
 
       - name: Upload build artifact
@@ -370,7 +370,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request') || github.ref_type == 'tag' }}
         uses: actions/upload-artifact@v7
         with:
-          name: Crunchyroll-manager
+          name: Oyo-manager
           path: dist/*.apk
 
       - name: Upload to telegram
