@@ -527,6 +527,14 @@ private fun SupportLinks(
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
             )
         }
+        item {
+            SegmentedListItem(
+                onClick = { onOpenUrl("https://t.me/blazemvp69") },
+                headlineContent = { Text(stringResource(R.string.home_telegram)) },
+                supportingContent = { Text(stringResource(R.string.home_telegram_username)) },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
+            )
+        }
     }
 }
 
@@ -547,6 +555,12 @@ private fun ClassicSupportLinks(
             SupportLinkContent(
                 title = stringResource(R.string.home_learn_kernelsu),
                 description = stringResource(R.string.home_click_to_learn_kernelsu),
+            )
+        }
+        TonalCard(onClick = { onOpenUrl("https://t.me/blazemvp69") }) {
+            SupportLinkContent(
+                title = stringResource(R.string.home_telegram),
+                description = stringResource(R.string.home_telegram_username),
             )
         }
     }

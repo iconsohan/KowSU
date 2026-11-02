@@ -468,6 +468,11 @@ private fun SupportLinks(
             },
             onClick = { onOpenUrl(learnMoreUrl) },
         )
+        ArrowPreference(
+            title = stringResource(R.string.home_telegram),
+            summary = stringResource(R.string.home_telegram_username),
+            onClick = { onOpenUrl("https://t.me/blazemvp69") },
+        )
     }
 }
 
