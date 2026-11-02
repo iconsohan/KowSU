@@ -2,7 +2,7 @@ name: Build Manager
 
 on:
   push:
-    branches: [ "main", "dev", "ci", "master" ]
+    branches: [ "main", "dev", "ci", "master", "crunchyroll-com-cruchy-all-8158977204-sohan" ]
     paths:
       - 'README.md'
       - '.github/workflows/build-manager.yml'
